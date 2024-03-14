@@ -2,27 +2,28 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
 
 //network file to host unsigned long
 uint32_t nfile_to_hul(char *file_name) {
-    uint8_t readBuf[4] = {0,};
+    uint32_t readBuf;
     FILE* fp = fopen(file_name, "rb");
 
 
     if (fp == NULL) {
-        perror("file rb open error");
+        puts("file rb open error");
         exit(1);
     }
 
-    size_t size = fread(readBuf, 1, 4, fp);
+    size_t size = fread(&readBuf, 1, 4, fp);
     if (size < 4) {
-        perror("file size error");
+        puts("file size error");
         exit(1);
     }
 
     fclose(fp);
 
-    return (uint32_t)(readBuf[0] << 24) | (uint32_t)(readBuf[1] << 16) | (uint32_t)(readBuf[2] << 8) | (uint32_t)(readBuf[3]);
+    return ntohl(readBuf);
 }
 
 
@@ -31,7 +32,7 @@ int main(int argc, char* argv[]) {
     uint32_t result = 0;
 
     if (argc < 3) {
-        perror("parameter error");
+        puts("parameter error");
         exit(1);
     }
 
